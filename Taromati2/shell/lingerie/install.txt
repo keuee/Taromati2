@@ -1,0 +1,5 @@
+charset,Shift_JIS
+type,shell
+name,‰º’…
+accept,‹k‰Ô
+directory,lingerie

@@ -1,0 +1,41 @@
+OnChangeShell{
+	if fjswitch
+		fjswitch='-1'
+	_t=reference0
+	if _argv[0]
+		_t=_argv[0]
+	'\![change,shell,'+_t+']'
+}
+OnSilentChangeShell{
+	SilentShellChange=1
+	OnChangeShell(_argv)
+}
+OnChangeShellWithTalk{
+	OnShellChanging
+	--
+	OnChangeShell(_argv)
+}
+OnChangeGhost{
+	if fjswitch
+		fjswitch='-1'
+	_t=reference0
+	if _argv[0]
+		_t=_argv[0]
+	'\![change,ghost,'+_t+']'
+}
+OnChangeBalloon{
+	if fjswitch
+		fjswitch='-1'
+	_t=reference0
+	if _argv[0]
+		_t=_argv[0]
+	'\![change,balloon,'+_t+']'
+}
+OnCallGhost{
+	if fjswitch
+		fjswitch='-1'
+	_t=reference0
+	if _argv[0]
+		_t=_argv[0]
+	'\![call,ghost,'+_t+']'
+}

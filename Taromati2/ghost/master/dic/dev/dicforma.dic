@@ -1,0 +1,196 @@
+//辞书优化辞书
+//by steve02081504 for Taromati2
+//《关于我写的女儿可以改写自己这件事》
+//警告：此辞书未完工，使用此辞书可能有未知风险，而含有区块注释与预编译指令的辞书近乎一定会导致错误
+//
+//CHR 1:换行
+//CHR 2:语法分割
+//字符SOH和STX无法使用
+Select.self_tuning{
+	'\0\s[6]自优化机能是不稳定的开发用、未完工机能\n/
+	会消耗大量时间并产生大量的错误报告\n/
+	优化的结果也会在更新时被覆盖掉\n/
+	\s[8]真的要继续么？\n/
+	\q[◇取消,Cancel]\n/
+	\q[◇算了,Cancel]\n/
+	\q[◇继续,OnSelfTuning]\n/
+	'
+}
+OnSelfTuning{
+	MKDIR('VAR_PATH')
+	DELDIR('VAR_PATH\dicforma_error')
+	dicforma.all_dic
+	'\0\s[0]\![reload,shiori]好的\w9\w9\s[100]，完成了\n'
+	--
+	if FENUM('VAR_PATH\dicforma_error'){
+		MAGICUNLOCK
+		'只是\w9…\w9…\n\w9\w9\s[8]仍有部分错误需要手动修正\n\![open,file,VAR_PATH\dicforma_error]'
+	}
+}
+dicforma.all_dic:void{
+	foreach _DIC_DIRS_;_dic{
+		dicforma.all_dic.mapper(_dic)
+	}
+}
+dicforma.all_dic.mapper:void{
+	_t=FENUM(_argv[0])
+	foreach _t;_i{
+		if ISDIR(_argv[0]+'\'+_i)
+			dicforma.all_dic.mapper(_argv[0]+'\'+_i);
+		else{
+			if RE_GREP(_i,'.dic$')
+				dicforma.main(_argv[0]+'\'+_i)
+		}
+	}
+}
+dicforma.main:void{//dicforma.main('dic\nurturance\nurturance.dic')
+	dicforma.varinit(_argv[0])
+	while dicforma.line.now!=-1{
+		dicforma.line.now=RE_REPLACE(dicforma.line.now,'\s+//','//')
+		dicforma.line.now=RE_REPLACE(dicforma.line.now,';$','')
+		dicforma.line.now=RE_REPLACE(dicforma.line.now,';//','//')
+		dicforma.line.now=RE_REPLACE(dicforma.line.now,'//\s+','//')
+		//dicforma.line.now=RE_REPLACE(dicforma.line.now,'(?!\\\!\[\*\])(|○|◎|◆)?\\q\[(?!◇|○|◎|◆|◥|■|◢|◄|●|►|▲|▼|%|<<|[\S(?!>|\])]*>>|[ABCD].)','\\q\[◇')
+		//dicforma.line.now=RE_REPLACEEX(dicforma.line.now,'\s*(=|+|-|*|/|!|(=|+|-|*|/|!)=)\s*',' $1 ')
+		//
+		dicforma.tabnum_change
+		//
+		dicforma.writeline(dicforma.line.now)
+		//
+		dicforma.readline
+	}
+	dicforma.clearvar
+}
+dicforma.varinit:void{
+	dicforma.fname=_argv[0]
+	dicforma.tfname=_argv[0]+'.tmp'
+	_t=FOPEN(dicforma.fname,'r')
+	_t=FOPEN(dicforma.tfname,'w')
+	dicforma.RE.everychar='[\S\s'+"%(CHR(1))"+']'
+	dicforma.tabnum=0
+	dicforma.line.before=''
+	dicforma.line.now=''
+	dicforma.line.next=''
+	dicforma.readline
+	dicforma.readline
+}
+dicforma.clearvar:void{
+	_t=FCLOSE(dicforma.fname)
+	_t=FCLOSE(dicforma.tfname)
+	if !dicforma.ERROR{
+		FDEL(dicforma.fname)
+		FRENAME(dicforma.tfname,dicforma.fname)
+	}else{
+		FRENAME(dicforma.tfname,dicforma.fname+'.error')
+		MKDIR('.\VAR_PATH\dicforma_error')
+		FMOVE(dicforma.fname+'.error','.\VAR_PATH\dicforma_error')
+	}
+	ERASEALLVARBEGINAS('dicforma')
+}
+dicforma.tabnum_change:void{
+	_before.morpheme_extraction=dicforma.morpheme_extraction(dicforma.line.before)
+	_now.morpheme_extraction=dicforma.morpheme_extraction(dicforma.line.now)
+	if '{' _in_ _before.morpheme_extraction
+		dicforma.tabnum++
+	if '}' != _before.morpheme_extraction && '}' _in_ _before.morpheme_extraction
+		dicforma.tabnum--
+	if '}' == _now.morpheme_extraction
+		dicforma.tabnum--
+	if RE_GREP(dicforma.morpheme_extraction(dicforma.line.before),'^(if|for|while|else|elseif|case|when)') && (!RE_GREP(dicforma.morpheme_extraction(dicforma.line.before),'(\{|blockmorpheme)$')) 
+		dicforma.oneline_tab=1
+}
+dicforma.morpheme_extraction{
+	_t=_argv[0]
+	_argv[0]=IARRAY
+	_t=RE_REPLACE(_t,'/\*'+dicforma.RE.everychar+'*?\*/',' morpheme ')
+	_t=RE_REPLACE(_t,'\"'+dicforma.RE.everychar+'*?\"',' morpheme ')
+	_t=RE_REPLACE(_t,"\'"+dicforma.RE.everychar+"*?\'",' morpheme ')
+	_t=RE_REPLACE(_t,'\{'+dicforma.RE.everychar+'*?\}',' blockmorpheme ')
+	_t=RE_REPLACE(_t,'\('+dicforma.RE.everychar+'*?\)',' morpheme ')
+	_t=RE_REPLACE(_t,'//'+dicforma.RE.everychar+'*?$','')
+	_t=RE_REPLACE(_t,'^\s+','')
+	_t=RE_REPLACE(_t,'\s+$','')
+	_t
+}
+dicforma.line.move:void{
+	dicforma.line.before=dicforma.line.now
+	dicforma.line.now=dicforma.line.next
+}
+dicforma.line.unmove:void{
+	dicforma.line.now=dicforma.line.before
+	dicforma.line.next=dicforma.line.now
+}
+dicforma.readline.base{
+	_t=FREAD(dicforma.fname)
+	if _t==-1{
+		-1
+		return
+	}
+	_t=RE_REPLACE(_t,'^\s+','')
+	_t=RE_REPLACE(_t,'\s+$','')
+	if _t==''{
+		dicforma.readline.base
+		return
+	}
+	if RE_GREP(_t,'/$')
+		//_t=_t+"%(CHR(1))"+dicforma.readline.base
+		_t="%_t%(CHR(1))%(dicforma.readline.base)"
+	_t
+}
+dicforma.readline:void{
+	dicforma.line.move
+	dicforma.line.next=dicforma.readline.base
+	if '*/' _in_ dicforma.morpheme_extraction(dicforma.line.next)
+		dicforma.in_block_commit=0
+	if '/*' _in_ dicforma.morpheme_extraction(dicforma.line.next)
+		dicforma.in_block_commit=1
+	if RE_GREP(dicforma.morpheme_extraction(dicforma.line.now),'^(if|for|while|else|elseif|case|when)') && (!RE_GREP(dicforma.morpheme_extraction(dicforma.line.now),'\{$')) && RE_GREP(dicforma.morpheme_extraction(dicforma.line.next),'^\{'){
+		dicforma.line.now+='{'
+		dicforma.line.next=RE_REPLACE(dicforma.line.next,'^\{','')
+	}
+	dicforma.reverse_bracenum=0
+	while RE_GREP(dicforma.morpheme_extraction(dicforma.line.now),dicforma.RE.everychar+'+\}$'){
+		dicforma.reverse_bracenum++
+		dicforma.line.now=RE_REPLACE(dicforma.line.now,'\}$','')
+	}
+}
+dicforma.writeline:void{
+	if _argv[0]==-1 || _argv[0]==''
+		return
+	_t=_argv[0]
+	_argv[0]=IARRAY
+	
+	if dicforma.oneline_tab{
+		_r=FWRITE2(dicforma.tfname,'	')
+		dicforma.oneline_tab=0
+	}
+	for _j=dicforma.tabnum;_j;_j--;{
+		if _j<0{
+			_r=FWRITE_WITH_LF(dicforma.tfname,'//dicforma ERROR:tabnum wrong')
+			_j=1
+			dicforma.ERROR=1
+			return
+		}
+		_r=FWRITE2(dicforma.tfname,'	')
+	}
+	if "%(CHR(1))" _in_ _t{
+		_r=FWRITE_WITH_LF(dicforma.tfname,_t[0,"%(CHR(1))"])
+		_t[0,"%(CHR(1))"]=IARRAY
+		dicforma.writeline(_t)
+	}else{
+		_r=FWRITE_WITH_LF(dicforma.tfname,_t)
+	}
+	//FWRITE_WITH_LF(dicforma.tfname,"//dicforma test:tabnum %dicforma.tabnum")
+	while dicforma.reverse_bracenum{
+		if dicforma.reverse_bracenum<0{
+			_r=FWRITE_WITH_LF(dicforma.tfname,'//dicforma ERROR:reverse bracenum wrong')
+			dicforma.reverse_bracenum=1
+			dicforma.ERROR=1
+			return
+		}
+		dicforma.line.now='}'
+		dicforma.tabnum--
+		dicforma.writeline('}')
+		dicforma.reverse_bracenum--
+	}
+}

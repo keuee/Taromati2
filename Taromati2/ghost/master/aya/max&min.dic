@@ -1,0 +1,19 @@
+//by steve02081504
+MAX{
+	_t=''
+	while _argc{
+		_argc--
+		if _argv[_argc]!='' && _argv[_argc] > _t
+			_t=_argv[_argc]
+	}
+	_t
+}
+MIN{
+	_t=''
+	while _argc{
+		_argc--
+		if _argv[_argc]!='' && _argv[_argc] < _t
+			_t=_argv[_argc]
+	}
+	_t
+}

@@ -1,0 +1,27 @@
+//by steve02081504
+//
+#globaldefine SHIORI_NAME			aya
+#globaldefine _DIC_DIRS_			'aya,dic'
+//
+#globaldefine DATA_PATH				BASE_PATH\_DATA_PATH
+#globaldefine IMG_PATH				BASE_PATH\_IMG_PATH
+#globaldefine SOUND_PATH			BASE_PATH\_SOUND_PATH
+#globaldefine SAORI_PATH			BASE_PATH\_SAORI_PATH
+#globaldefine SHIORI_PATH			BASE_PATH\_SHIORI_PATH
+#globaldefine PROFILE_PATH			BASE_PATH\_PROFILE_PATH
+#globaldefine PSEUDO_AI_PATH		BASE_PATH\_PSEUDO_AI_PATH
+#globaldefine VAR_PATH				BASE_PATH\_VAR_PATH
+#globaldefine SHIORI_BACKUP_PATH	BASE_PATH\_SHIORI_BACKUP_PATH
+//
+#globaldefine _DATA_PATH			data
+#globaldefine _IMG_PATH				img
+#globaldefine _SOUND_PATH			sound
+#globaldefine _SAORI_PATH			saori
+#globaldefine _SHIORI_PATH			shiori
+#globaldefine _PROFILE_PATH			profile
+#globaldefine _PSEUDO_AI_PATH		pseudoAI
+#globaldefine _VAR_PATH				var
+#globaldefine _SHIORI_BACKUP_PATH	shiori_backup
+//
+#globaldefine BASE_PATH				.
+#globaldefine SAVE_FILE				aya_variable.cfg

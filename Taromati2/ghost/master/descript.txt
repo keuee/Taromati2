@@ -1,0 +1,15 @@
+charset,UTF-8
+name,Taromati2
+type,ghost
+sakura.name,橘花
+kero.name,斗和
+balloon,wiz
+seriko.alignmenttodesktop,free
+icon,.\\img\\ico\\kikka.ico
+icon.minimize,.\\img\\ico\\kikka_eye_close.ico
+shiori,aya.dll
+craftman,8 and other contributors
+craftmanw,8 and other contributors
+craftmanurl,https://github.com/steve02081504/Taromati2/blob/master/md/contributors.md
+default.balloon.path,..\\..\\balloon\\wiz\\
+shiori.logo.file,.\\img\\AI_state.png

@@ -1,0 +1,96 @@
+//by steve02081504
+ISDIR{
+	FATTRIB(_argv[0])[2]
+}
+FILEEXIST{
+	FATTRIB(_argv[0])!=-1
+}
+FWRITE_WITH_{
+	FWRITE2(_argv[1],_argv[2]+_argv[0])
+}
+FWRITE_WITH_LF{
+	FWRITE2(_argv[0],_argv[1]+C_LF)
+}
+FWRITE_WITH_CR{
+	FWRITE2(_argv[0],_argv[1]+C_CR)
+}
+DELDIR{
+	_attrib=FATTRIB(_argv[0])
+	if _attrib!=-1{
+		if _attrib[2]{
+			_d=FENUM(_argv[0])
+			foreach _d;_i{
+				_temp=DELDIR(_argv[0]+'\'+_i)
+			}
+			_temp=RMDIR(_argv[0])
+		}else{
+			_temp=FDEL(_argv[0])
+		}
+	}
+}
+/*
+DIRCOPY{
+	_attrib=FATTRIB(_argv[0])
+	if _attrib!=-1{
+		if _attrib[2]{
+			_temp=MKDIR(_argv[1])
+			_d=FENUM(_argv[0])
+			foreach _d;_i{
+				_temp=DIRCOPY(_argv[0]+'\'+_i,_argv[1]+'\'+_i)
+			}
+		}else{
+			_temp=FULLNAMEFCOPY(_argv[0],_argv[1])
+		}
+		if _attrib[3]
+			_temp=FHIDDEN(_argv[1])
+	}
+}
+*/
+DIRCOPY{
+	MKDIR(_argv[1])
+	RUNCMD('XCOPY "'+_argv[0]+'" "'+_argv[1]+'" /Q /H /R /Y /J /K /V /I /E')
+	if FATTRIB(_argv[0])[3]
+		_temp=FHIDDEN(_argv[1])
+	if FATTRIB(_argv[1])==-1
+		0
+	else
+		1
+}
+FHIDDEN{
+	RUNCMD('attrib +H "'+_argv[0]+'"')
+}
+FUNHIDDEN{
+	RUNCMD('attrib -H "'+_argv[0]+'"')
+}
+/*
+FULLNAMEFCOPY{
+	_attrib=FATTRIB(_argv[0])
+	if _attrib!=-1{{
+			_t=FOPEN(_argv[0],'rb')
+			_t=FOPEN(_argv[1],'wb')
+			_size=FSIZE(_argv[0])
+			while FTELL(_argv[0])!=_size{
+				_t=FWRITEBIN(_argv[1],FREADBIN(_argv[0],0))
+			}
+			_t=FCLOSE(_argv[0])
+			_t=FCLOSE(_argv[1])
+		}
+		if _attrib[3]
+			_t=FHIDDEN(_argv[1])
+	}
+}
+*/
+FULLNAMEFCOPY{
+	_h=FATTRIB(_argv[0])[3]
+	if _h
+		_temp=FUNHIDDEN(_argv[0])
+	_temp=RUNCMD('COPY /B "'+_argv[0]+'" "'+_argv[1]+'"')
+	if _h{
+		_temp=FHIDDEN(_argv[0])
+		_temp=FHIDDEN(_argv[1])
+	}
+	if FATTRIB(_argv[1])==-1
+		0
+	else
+		1
+}

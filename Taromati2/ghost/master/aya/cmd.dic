@@ -1,0 +1,15 @@
+//by steve02081504
+RUNCMD{
+	EXECUTE_WAIT('cmd','/D /C chcp 65001 '+'&& cd BASE_PATH\ghost\Taromati2\ghost\master '+'&& '+_argv[0])
+}
+/*//GETENV于yaya的Tc552-1成为系统函数
+GETENV{
+	_temp=MKDIR('var')
+	_temp=RUNCMD('echo %'+_argv[0]+'% > VAR_PATH\ENV.tmp')
+	_temp=FOPEN('VAR_PATH\ENV.tmp','r')
+	_t=FREAD('VAR_PATH\ENV.tmp')
+	_temp=FCLOSE('VAR_PATH\ENV.tmp')
+	_t=RE_REPLACE(_t,'\s+$','')
+	_t
+}
+*/
