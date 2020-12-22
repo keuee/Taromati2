@@ -1,0 +1,5 @@
+charset,Shift_JIS
+type,shell
+name,—‡YƒVƒƒƒc
+accept,‹k‰Ô
+directory,hadaY

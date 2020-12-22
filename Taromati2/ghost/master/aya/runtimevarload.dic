@@ -1,0 +1,45 @@
+//by steve02081504
+RUNTTIMEVARLOAD{
+	_t=FOPEN(_argv[0],'r')
+	while _t != -1{
+		_t=FREAD(_argv[0])
+		//EVAL(_t)//中文变量出错
+		_name=_t[0,'=']
+		_t[0,'=']=IARRAY
+		LETTONAME(_name,_t)
+	}
+	_t=FCLOSE(_argv[0])
+}
+RUNTTIMEVARSAVE{
+	ClearTempVar
+	_L=GETVARLIST
+	_t=FOPEN(_argv[0],'w')
+	foreach _L;_V{
+		if !('_arg'_in_ _V)
+			RUNTTIMEVARSAVE_ONE(_argv[0],_V)
+	}
+	_t=FCLOSE(_argv[0])
+}
+RUNTTIMEVARSAVE_ONE{
+	FWRITE2(_argv[0],_argv[1]+'=')
+	RUNTTIMEVARSAVER(_argv[0],EVAL(_argv[1]))
+	FWRITE(_argv[0],'')
+}
+RUNTTIMEVARSAVER{
+	case GETTYPE(_argv[1]){
+		when 3{
+			FWRITE2(_argv[0],'"'+_argv[1]+'"')
+		}
+		when 4{
+			FWRITE2(_argv[0],'(')
+			foreach _argv[1];_t{
+				RUNTTIMEVARSAVER(_argv[0],_t)
+				FWRITE2(_argv[0],',')
+			}
+			FWRITE2(_argv[0],')')
+		}
+		others{
+			FWRITE2(_argv[0],TOSTR(_argv[1]))
+		}
+	}
+}

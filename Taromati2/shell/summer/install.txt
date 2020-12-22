@@ -1,0 +1,5 @@
+charset,Shift_JIS
+type,shell
+name,‰Ä•ž
+accept,‹k‰Ô
+directory,summer
